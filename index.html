@@ -37,7 +37,7 @@
       left:0;
       right:0;
       top:0;
-      bottom:52px;          /* kontrol barı yüksekliği ~40-55px; güvenli pay */
+      bottom:52px;          /* kontrol barı yüksekliği ~40-55px */
       cursor:pointer;
       background:rgba(0,0,0,0);
       z-index:3;
@@ -54,7 +54,7 @@
       font-size:22px;
       font-weight:bold;
       z-index:2;
-      pointer-events:none;  /* tıklamayı tap-layer yakalasın */
+      pointer-events:none;
       transition:opacity .2s;
     }
     .overlay.hidden{ opacity:0; }
@@ -62,7 +62,8 @@
     .note{
       margin-top:10px;
       font-size:14px;
-      opacity:.7;
+      opacity:.75;
+      line-height:1.4;
     }
   </style>
 </head>
@@ -72,8 +73,15 @@
     <h1>FiProduct Proje Sunumu</h1>
 
     <div class="video-wrap">
-      <video id="video" preload="metadata" playsinline controls>
-        <source src="https://pub-1ac0f9a2830f44a2bca7b143de1a749c.r2.dev/FiProduct_Sunum.mp4" type="video/mp4">
+      <video
+        id="video"
+        preload="none"
+        playsinline
+        controls
+        poster="https://pub-1ac0f9a2830f44a2bca7b143de1a749c.r2.dev/poster.jpg"
+      >
+        <!-- Video 100MB olduysa isim/path değiştiyse burayı güncelle -->
+        <source src="https://pub-1ac0f9a2830f44a2bca7b143de1a749c.r2.dev/FiProduct_Sunum.mp4?v=2" type="video/mp4">
         Tarayıcınız videoyu oynatamıyor.
       </video>
 
@@ -82,11 +90,18 @@
     </div>
 
     <div class="note">
-      Videonun üstüne tıklayarak oynat/durdur yapabilirsiniz. Alt kontrol çubuğu normal çalışır.
+      Not: Video ilk açılışta yüklenmiş görünmeyebilir; “Oynat”a basınca başlar. Wi-Fi önerilir.
     </div>
   </div>
 
   <script>
+    // CDN "cold start" / ilk açılış tutarsızlıkları için 1 defalık mini-warmup reload
+    // Kullanıcıya sürekli refresh yaptırmamak için.
+    if (!sessionStorage.getItem('loadedOnce')) {
+      sessionStorage.setItem('loadedOnce', 'yes');
+      setTimeout(() => location.reload(), 300);
+    }
+
     const video = document.getElementById('video');
     const overlay = document.getElementById('overlay');
     const tapLayer = document.getElementById('tapLayer');
@@ -99,17 +114,17 @@
     async function togglePlayPause() {
       try {
         if (video.paused || video.ended) {
-          await video.play();   // user gesture içinde -> güvenilir
+          await video.play();   // user gesture içinde -> stabil
         } else {
           video.pause();
         }
       } catch (e) {
-        // İlk play bazen engellenebilir; kullanıcı tekrar tıklar.
+        // Bazı tarayıcılar ilk play'i engelleyebilir; kullanıcı tekrar tıklar.
       }
       updateOverlay();
     }
 
-    // Üst alana tıklayınca toggle
+    // Üst alana tıklayınca toggle (alt kontrol barı serbest)
     tapLayer.addEventListener('click', (e) => {
       e.preventDefault();
       togglePlayPause();
@@ -124,5 +139,6 @@
   </script>
 </body>
 </html>
+
 
 
