@@ -3,49 +3,180 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
   <title>FiProduct Video Sunumu</title>
+
   <style>
+    :root{
+      --bg:#0f1115;
+      --card:#171a21;
+      --border:#2a2f3a;
+      --text:#fff;
+      --muted:rgba(255,255,255,.75);
+      --btn:#2b5cff;
+    }
+
     body{
       margin:0;
-      background:#0f1115;
-      color:#fff;
+      background:var(--bg);
+      color:var(--text);
       font-family:Arial, sans-serif;
       display:flex;
       justify-content:center;
       padding:24px;
     }
+
     .wrap{
       max-width:960px;
       width:100%;
     }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:18px;
+    }
+
     h1{
-      margin-bottom:14px;
+      margin:0 0 10px;
       font-size:24px;
     }
+
+    .sub{
+      margin:0 0 14px;
+      font-size:14px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+
+    .video-box{
+      position:relative;
+      border-radius:16px;
+      overflow:hidden;
+      background:#000;
+    }
+
     video{
       width:100%;
+      display:block;
       border-radius:16px;
       background:#000;
     }
-    .note{
-      margin-top:10px;
+
+    /* Kullanıcıya "tıkla oynat" hissini net vermek için */
+    .hint{
+      position:absolute;
+      left:12px;
+      bottom:12px;
+      background:rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.18);
+      color:#fff;
+      border-radius:12px;
+      padding:10px 12px;
       font-size:14px;
-      opacity:.7;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      pointer-events:none;
+      backdrop-filter: blur(6px);
+    }
+
+    .hint .dot{
+      width:10px; height:10px;
+      border-radius:999px;
+      background:var(--btn);
+      box-shadow:0 0 0 3px rgba(43,92,255,.25);
+    }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    a.btn{
+      display:inline-block;
+      text-decoration:none;
+      color:#fff;
+      border-radius:12px;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      font-size:14px;
+    }
+
+    a.btn.primary{
+      background:var(--btn);
+      border-color:var(--btn);
+    }
+
+    .note{
+      margin-top:12px;
+      font-size:14px;
+      color:var(--muted);
+      line-height:1.4;
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <h1>FiProduct Proje Sunumu</h1>
+    <div class="card">
+      <h1>FiProduct Proje Sunumu</h1>
+      <p class="sub">
+        Video otomatik başlamayabilir; tarayıcılar (özellikle mobilde) oynatmak için kullanıcı tıklaması ister.
+      </p>
 
-    <video controls preload="metadata" playsinline>
-      <source src="https://pub-1ac0f9a2830f44a2bca7b143de1a749c.r2.dev/FiProduct_Sunum.mp4" type="video/mp4">
-      Tarayıcınız videoyu oynatamıyor.
-    </video>
+      <div class="video-box">
+        <video
+          id="mainVideo"
+          controls
+          preload="metadata"
+          playsinline
+          controlslist="nodownload"
+          poster="https://pub-1ac0f9a2830f44a2bca7b143de1a749c.r2.dev/poster.jpg"
+        >
+          <source src="https://pub-1ac0f9a2830f44a2bca7b143de1a749c.r2.dev/FiProduct_Sunum.mp4" type="video/mp4">
+          Tarayıcınız videoyu oynatamıyor.
+        </video>
 
-    <div class="note">
-      En iyi deneyim için Wi-Fi önerilir.
+        <div class="hint" id="hint">
+          <span class="dot"></span>
+          <span>▶ Oynat’a basarak başlatın</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="btn primary" href="https://pub-1ac0f9a2830f44a2bca7b143de1a749c.r2.dev/FiProduct_Sunum.mp4" target="_blank" rel="noopener">
+          Videoyu yeni sekmede aç
+        </a>
+        <a class="btn" href="https://pub-1ac0f9a2830f44a2bca7b143de1a749c.r2.dev/FiProduct_Sunum.mp4" download>
+          İndir
+        </a>
+      </div>
+
+      <div class="note">
+        En iyi deneyim için Wi-Fi önerilir. İlk açılışta büyük dosya nedeniyle birkaç saniye bekleme normaldir.
+      </div>
     </div>
   </div>
+
+  <script>
+    // Kullanıcı oynatınca "Oynat'a bas" hintini gizle
+    const v = document.getElementById("mainVideo");
+    const hint = document.getElementById("hint");
+
+    const hideHint = () => { if (hint) hint.style.display = "none"; };
+    const showHint = () => { if (hint) hint.style.display = "flex"; };
+
+    v.addEventListener("play", hideHint);
+    v.addEventListener("playing", hideHint);
+    v.addEventListener("pause", showHint);
+    v.addEventListener("ended", showHint);
+
+    // Sayfa ilk açıldığında hint görünsün (poster siyah ekran hissini azaltır)
+    showHint();
+  </script>
 </body>
 </html>
