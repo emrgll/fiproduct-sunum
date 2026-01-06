@@ -75,13 +75,12 @@
     <div class="video-wrap">
       <video
         id="video"
-        preload="none"
+        preload="metadata"
         playsinline
         controls
-        poster="https://pub-1ac0f9a2830f44a2bca7b143de1a749c.r2.dev/poster.jpg"
+        poster="poster.jpg"
       >
-        <!-- Video 100MB olduysa isim/path değiştiyse burayı güncelle -->
-        <source src="https://pub-1ac0f9a2830f44a2bca7b143de1a749c.r2.dev/FiProduct_Sunum.mp4?v=2" type="video/mp4">
+        <source src="https://pub-1ac0f9a2830f44a2bca7b143de1a749c.r2.dev/FiProduct_Sunum.mp4" type="video/mp4">
         Tarayıcınız videoyu oynatamıyor.
       </video>
 
@@ -90,21 +89,28 @@
     </div>
 
     <div class="note">
-      Not: Video ilk açılışta yüklenmiş görünmeyebilir; “Oynat”a basınca başlar. Wi-Fi önerilir.
+      Not: “Oynat”a basınca video başlar. Wi-Fi önerilir.
     </div>
   </div>
 
   <script>
-    // CDN "cold start" / ilk açılış tutarsızlıkları için 1 defalık mini-warmup reload
-    // Kullanıcıya sürekli refresh yaptırmamak için.
-    if (!sessionStorage.getItem('loadedOnce')) {
-      sessionStorage.setItem('loadedOnce', 'yes');
-      setTimeout(() => location.reload(), 300);
-    }
-
     const video = document.getElementById('video');
     const overlay = document.getElementById('overlay');
     const tapLayer = document.getElementById('tapLayer');
+
+    // Poster yüklenemezse: local poster'a düş (veya tamamen kaldır)
+    (function posterFallback(){
+      const posterUrl = video.getAttribute('poster');
+      if (!posterUrl) return;
+
+      const img = new Image();
+      img.onerror = () => {
+        // Eğer poster.jpg zaten local ise bu satır etkisiz kalır;
+        // istersen tamamen kaldır: video.removeAttribute('poster');
+        video.setAttribute('poster', 'poster.jpg');
+      };
+      img.src = posterUrl;
+    })();
 
     function updateOverlay() {
       if (video.paused || video.ended) overlay.classList.remove('hidden');
