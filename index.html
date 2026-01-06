@@ -98,20 +98,6 @@
     const overlay = document.getElementById('overlay');
     const tapLayer = document.getElementById('tapLayer');
 
-    // Poster yüklenemezse: local poster'a düş (veya tamamen kaldır)
-    (function posterFallback(){
-      const posterUrl = video.getAttribute('poster');
-      if (!posterUrl) return;
-
-      const img = new Image();
-      img.onerror = () => {
-        // Eğer poster.jpg zaten local ise bu satır etkisiz kalır;
-        // istersen tamamen kaldır: video.removeAttribute('poster');
-        video.setAttribute('poster', 'poster.jpg');
-      };
-      img.src = posterUrl;
-    })();
-
     function updateOverlay() {
       if (video.paused || video.ended) overlay.classList.remove('hidden');
       else overlay.classList.add('hidden');
@@ -145,7 +131,3 @@
   </script>
 </body>
 </html>
-
-
-
-
